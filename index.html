@@ -1,0 +1,141 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>SabalFlow AI — Business Assistant</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-mark">S</div>
+      <div class="brand-copy">
+        <h1>SabalFlow <span>AI</span></h1>
+        <p>Business assistant · Demo mode</p>
+      </div>
+      <span class="demo-pill"><i></i> DEMO</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="eyebrow">YOUR BUSINESS, MORE ORGANIZED</p>
+        <h2>Less repetitive work.<br><span>More room to grow.</span></h2>
+        <p class="hero-copy">Test a simple assistant for answering common questions, tracking enquiries, and preparing follow-ups.</p>
+        <div class="hero-stats">
+          <div><strong id="leadCount">0</strong><small>Leads saved</small></div>
+          <div><strong>4</strong><small>Demo FAQs</small></div>
+          <div><strong>Human</strong><small>Review required</small></div>
+        </div>
+      </section>
+
+      <nav class="tabs" aria-label="Main sections">
+        <button class="tab active" data-tab="assistant">Assistant</button>
+        <button class="tab" data-tab="leads">Lead tracker</button>
+        <button class="tab" data-tab="settings">Business info</button>
+      </nav>
+
+      <section class="panel active" id="assistantPanel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">01 / ASK THE ASSISTANT</p>
+            <h3>Draft an answer</h3>
+          </div>
+          <span class="icon-bubble">✦</span>
+        </div>
+        <p class="muted">This first prototype uses sample rules, not a live AI model. It will not invent an answer when information is missing.</p>
+        <label for="question">Customer's question</label>
+        <textarea id="question" rows="3" placeholder="Example: What are your Class 12 science tuition fees?"></textarea>
+        <button class="primary-btn" id="askBtn">Generate draft <span>↗</span></button>
+        <div class="answer-card" id="answerCard" aria-live="polite">
+          <div class="answer-top"><span class="status-dot"></span><span id="answerStatus">READY WHEN YOU ARE</span></div>
+          <p id="answerText">Your draft answer will appear here. Review every answer before sending it to a customer.</p>
+          <button class="text-btn" id="copyAnswerBtn" disabled>Copy draft</button>
+        </div>
+        <div class="note">
+          <strong>Safety check</strong>
+          <p>Unknown fees, dates, and policies should be confirmed by a real staff member.</p>
+        </div>
+      </section>
+
+      <section class="panel" id="leadsPanel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">02 / KEEP TRACK</p>
+            <h3>Enquiry tracker</h3>
+          </div>
+          <span class="icon-bubble">↗</span>
+        </div>
+        <form id="leadForm" class="lead-form">
+          <div class="field-row">
+            <div class="field">
+              <label for="leadName">Customer name</label>
+              <input id="leadName" required maxlength="80" placeholder="e.g. A student">
+            </div>
+            <div class="field">
+              <label for="leadStatus">Status</label>
+              <select id="leadStatus">
+                <option>New</option>
+                <option>Contacted</option>
+                <option>Follow-up</option>
+                <option>Completed</option>
+              </select>
+            </div>
+          </div>
+          <label for="leadNeed">What are they asking about?</label>
+          <input id="leadNeed" required maxlength="180" placeholder="e.g. Class 12 science course">
+          <label class="check-label">
+            <input id="leadConsent" type="checkbox">
+            I have permission to store this contact's details.
+          </label>
+          <button class="primary-btn" type="submit">Save enquiry <span>＋</span></button>
+        </form>
+        <div class="lead-list" id="leadList"></div>
+        <button class="danger-text" id="clearLeadsBtn" type="button">Clear all demo leads</button>
+      </section>
+
+      <section class="panel" id="settingsPanel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">03 / BUSINESS KNOWLEDGE</p>
+            <h3>Approved information</h3>
+          </div>
+          <span class="icon-bubble">▤</span>
+        </div>
+        <p class="muted">The assistant should answer only from information the business has confirmed. Edit these fields for your demo.</p>
+        <form id="businessForm" class="business-form">
+          <label for="businessName">Business name</label>
+          <input id="businessName" value="BrightPath Tuition Centre" maxlength="100">
+
+          <label for="courses">Courses / services</label>
+          <textarea id="courses" rows="2">Class 11 and Class 12 Science tuition</textarea>
+
+          <label for="hours">Opening hours</label>
+          <input id="hours" value="Sunday–Friday, 7:00 AM–6:00 PM" maxlength="120">
+
+          <label for="fees">Confirmed fee information</label>
+          <textarea id="fees" rows="2" placeholder="Enter an exact fee only after the business confirms it."></textarea>
+
+          <label for="contactInfo">Approved contact information</label>
+          <input id="contactInfo" placeholder="Phone or email (optional)" maxlength="150">
+
+          <button class="primary-btn" type="submit">Save business info <span>✓</span></button>
+          <p class="save-message" id="saveMessage" aria-live="polite"></p>
+        </form>
+        <div class="note">
+          <strong>Demo privacy</strong>
+          <p>Data is stored in this browser on this device. It is not synced to a server. Avoid entering real personal or sensitive information in this prototype.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Built for early testing</span>
+      <span>Not connected to a live AI model</span>
+    </footer>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
