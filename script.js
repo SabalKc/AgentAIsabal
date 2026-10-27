@@ -88,54 +88,137 @@ $("#businessForm").addEventListener("submit", event => {
   };
 
   saveBusiness(business);
-  $("#saveMessage").textContent = "Saved on this device.";
+  $("#saveMessage").textContent = "Business information saved on this device.";
 
   setTimeout(() => {
     $("#saveMessage").textContent = "";
   }, 2500);
 });
 
+// Understand more customer question styles.
+function getIntent(question) {
+  const q = question.toLowerCase()
+    .replace(/[’']/g, "")
+    .replace(/[?!.,]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (/^(hi|hello|hey|hii|heyy|namaste|good morning|good afternoon|good evening)\b/.test(q)) {
+    return "greeting";
+  }
+
+  if (/\b(thank you|thanks|thx|thank u)\b/.test(q)) {
+    return "thanks";
+  }
+
+  if (/\b(who are you|what are you|your name|what is sabalflow)\b/.test(q)) {
+    return "identity";
+  }
+
+  if (/\b(fee|fees|price|prices|cost|tuition fee|how much|payment|discount)\b/.test(q)) {
+    return "fees";
+  }
+
+  if (/\b(hours|opening time|closing time|open|close|opening hours|working hours|when are you open|when do you open)\b/.test(q)) {
+    return "hours";
+  }
+
+  if (/\b(course|courses|class|classes|subject|subjects|service|services|teach|teaching|offer|offers|program|programs|study|studies|science|biology|chemistry|physics|maths|mathematics)\b/.test(q)) {
+    return "courses";
+  }
+
+  if (/\b(contact|phone|telephone|email|call|address|location|located|directions|where are you|how can i reach)\b/.test(q)) {
+    return "contact";
+  }
+
+  if (/\b(admission|admissions|enroll|enrol|enrollment|registration|join|joining|apply|application|seat|seats|available seats)\b/.test(q)) {
+    return "admission";
+  }
+
+  if (/\b(online|offline|physical class|in person|virtual class)\b/.test(q)) {
+    return "class_mode";
+  }
+
+  if (/\b(schedule|timetable|time table|routine|class time|class timing|class starts|class start)\b/.test(q)) {
+    return "schedule";
+  }
+
+  if (/\b(scholarship|scholarships|trial class|demo class|free class)\b/.test(q)) {
+    return "special";
+  }
+
+  if (/\b(bye|goodbye|see you|talk later)\b/.test(q)) {
+    return "goodbye";
+  }
+
+  if (/\b(help|help me|what can you do|how does this work)\b/.test(q)) {
+    return "help";
+  }
+
+  return "unknown";
+}
+
 function draftAnswer(question) {
-  const q = question.toLowerCase();
-  const name = business.name;
-
-  if (!q.trim()) {
-    return "Enter a customer's question first.";
+  if (!question.trim()) {
+    return "Please enter a customer's question first.";
   }
 
-  if (/(fee|price|cost|tuition|charge|how much)/.test(q)) {
-    if (business.fees.trim()) {
-      return `Thanks for contacting ${name}. Our confirmed fee information is: ${business.fees}\n\nPlease contact the team if you need more details.`;
-    }
+  const name = business.name || "our business";
+  const intent = getIntent(question);
 
-    return `Thanks for contacting ${name}. I don't have a confirmed fee amount in the business information yet, so I don't want to give you an incorrect price. Our team will confirm the current fee with you.`;
+  switch (intent) {
+    case "greeting":
+      return `Hello! 👋 Thank you for contacting ${name}. How can we help you today?`;
+
+    case "thanks":
+      return `You're welcome! 😊 Thank you for contacting ${name}. Let us know if you need anything else.`;
+
+    case "identity":
+      return `I'm the SabalFlow assistant for ${name}. I help prepare replies using the business information available to me. How can I help you?`;
+
+    case "fees":
+      return business.fees.trim()
+        ? `Thanks for contacting ${name}! Our saved fee information is: ${business.fees}\n\nPlease contact the team if you need any additional details.`
+        : `Thanks for your interest in ${name}! I don't have confirmed fee information yet, so I won't guess the price. Our team can confirm the latest fees for you.`;
+
+    case "hours":
+      return business.hours.trim()
+        ? `Thanks for contacting ${name}! Our listed opening hours are ${business.hours}.\n\nPlease confirm with the team before visiting on a holiday.`
+        : `Thanks for contacting ${name}! Our opening hours haven't been confirmed yet. Please check with the team before visiting.`;
+
+    case "courses":
+      return business.courses.trim()
+        ? `Thanks for your interest in ${name}! Our currently listed courses or services are: ${business.courses}.\n\nWhich class or subject would you like to know more about?`
+        : `Thanks for your interest in ${name}! Our course list hasn't been added yet. Our team can confirm the available courses.`;
+
+    case "contact":
+      return business.contactInfo.trim()
+        ? `You can contact ${name} using these saved contact details:\n${business.contactInfo}`
+        : `I'd be happy to help you contact ${name}, but the contact details haven't been added yet. Please ask the business team for the correct information.`;
+
+    case "admission":
+      return `Thanks for your interest in joining ${name}! I don't have confirmed admission dates, seat availability, or registration requirements. Our team can provide the latest admission details.`;
+
+    case "class_mode":
+      return `You're asking whether ${name} offers online or in-person classes. That information isn't confirmed in my saved business details yet. Please check with the team.`;
+
+    case "schedule":
+      return business.hours.trim()
+        ? `The listed business hours are ${business.hours}. However, I don't have a confirmed class timetable. Please ask the team for the exact class schedule.`
+        : `I don't have a confirmed class timetable yet. Please contact the team for the latest schedule.`;
+
+    case "special":
+      return `That's a good question! I don't have confirmed information about scholarships, discounts, or trial classes. The team at ${name} can confirm which options are available.`;
+
+    case "goodbye":
+      return `Thank you for contacting ${name}! Have a wonderful day. We hope to hear from you again!`;
+
+    case "help":
+      return `I can help prepare replies about ${name}'s courses, fees, opening hours, admissions, and contact details.\n\nI use the saved business information, so some questions may need a staff member to confirm the answer.`;
+
+    default:
+      return `Thanks for contacting ${name}!\n\nI couldn't find a confirmed answer to your question in the saved business information. A staff member should review this enquiry before you receive a final reply.\n\nInternal note: If this question comes up often, add the verified answer to the business information or FAQ list.`;
   }
-
-  if (/(hour|open|close|time|when)/.test(q)) {
-    if (business.hours.trim()) {
-      return `Thanks for contacting ${name}. Our listed hours are ${business.hours}. Please confirm with the team if you are planning a visit on a holiday.`;
-    }
-
-    return `Thanks for contacting ${name}. Our opening hours have not been confirmed in this demo. Please check with the team before visiting.`;
-  }
-
-  if (/(course|class|subject|service|teach|offer|program)/.test(q)) {
-    if (business.courses.trim()) {
-      return `Thanks for contacting ${name}. The services currently listed are: ${business.courses}. Tell us which class or service you're interested in and the team can share the relevant details.`;
-    }
-
-    return `Thanks for contacting ${name}. The course and service list has not been added yet. Our team will confirm what's available.`;
-  }
-
-  if (/(contact|phone|email|call|address|location|where)/.test(q)) {
-    if (business.contactInfo.trim()) {
-      return `You can contact ${name} using this approved contact information: ${business.contactInfo}.`;
-    }
-
-    return `Thanks for contacting ${name}. Contact details haven't been added to this demo yet. Please ask the business team for the correct contact information.`;
-  }
-
-  return `Thanks for your question. I couldn't find a confirmed answer in ${name}'s saved information. A staff member should review this enquiry before replying.\n\nInternal note: Add the correct answer to the business information if this question comes up often.`;
 }
 
 $("#askBtn").addEventListener("click", () => {
@@ -153,11 +236,6 @@ $("#askBtn").addEventListener("click", () => {
 $("#copyAnswerBtn").addEventListener("click", async () => {
   try {
     await navigator.clipboard.writeText(latestAnswer);
-    $("#copyAnswerBtn").textContent = "Copied ✓";
-
-    setTimeout(() => {
-      $("#copyAnswerBtn").textContent = "Copy draft";
-    }, 1800);
   } catch {
     const area = document.createElement("textarea");
     area.value = latestAnswer;
@@ -165,13 +243,17 @@ $("#copyAnswerBtn").addEventListener("click", async () => {
     area.select();
     document.execCommand("copy");
     area.remove();
-    $("#copyAnswerBtn").textContent = "Copied ✓";
   }
+
+  $("#copyAnswerBtn").textContent = "Copied ✓";
+
+  setTimeout(() => {
+    $("#copyAnswerBtn").textContent = "Copy draft";
+  }, 1800);
 });
 
 function renderLeads() {
   $("#leadCount").textContent = leads.length;
-
   const list = $("#leadList");
 
   if (!leads.length) {
@@ -191,7 +273,7 @@ function renderLeads() {
       <div class="lead-meta">
         <p>${escapeHtml(lead.date)}</p>
         <select class="lead-status" data-id="${escapeHtml(lead.id)}" aria-label="Lead status">
-          ${["New","Contacted","Follow-up","Completed"].map(status =>
+          ${["New", "Contacted", "Follow-up", "Completed"].map(status =>
             `<option ${lead.status === status ? "selected" : ""}>${status}</option>`
           ).join("")}
         </select>
@@ -251,3 +333,4 @@ $("#clearLeadsBtn").addEventListener("click", () => {
 });
 
 renderLeads();
+           
