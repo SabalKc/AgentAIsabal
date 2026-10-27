@@ -204,41 +204,45 @@ function renderFaqs() {
   });
 }
 
+
 function findCustomFaq(question) {
-  const inputWords = normalize(question)
-    .split(" ")
-    .filter(word => word.length > 2);
+  const normalizeText = text =>
+    String(text || "")
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}\s]/gu, " ")
+      .replace(/\s+/g, " ")
+      .trim();
 
-  if (!inputWords.length) return null;
+  const input = normalizeText(question);
+  if (!input) return null;
 
-  let best = null;
+  let bestFaq = null;
   let bestScore = 0;
 
   for (const faq of faqs) {
-    const faqWords = [
-      ...new Set(
-        normalize(faq.question)
-          .split(" ")
-          .filter(word => word.length > 2)
-      )
-    ];
+    const saved = normalizeText(faq.question);
 
-    if (!faqWords.length) continue;
+    // Exact or near-exact question match
+    if (input === saved) return faq;
+
+    const inputWords = [...new Set(input.split(" "))];
+    const savedWords = [...new Set(saved.split(" "))];
 
     const matches = inputWords.filter(word =>
-      faqWords.includes(word)
+      word.length > 2 && savedWords.includes(word)
     ).length;
 
-    const score = matches / Math.max(inputWords.length, faqWords.length);
+    const score = matches / Math.max(savedWords.length, 1);
 
-    if (matches >= 2 && score > bestScore) {
-      best = faq;
+    if (matches > 0 && score > bestScore) {
+      bestFaq = faq;
       bestScore = score;
     }
   }
 
-  return bestScore >= 0.35 ? best : null;
+  return bestScore >= 0.4 ? bestFaq : null;
 }
+
 
 // ---------------- ASSISTANT BRAIN ----------------
 
